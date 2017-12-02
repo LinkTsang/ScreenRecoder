@@ -24,14 +24,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+QT += winextras
+LIBS += -lKernel32 -lUser32 -lGdi32
+
 SOURCES += \
         main.cpp \
     screenrecorder.cpp \
-    recorderwindow.cpp
+    recorderwindow.cpp \
+    helper.cpp
 
 HEADERS += \
     screenrecorder.h \
-    recorderwindow.h
+    recorderwindow.h \
+    helper.h
 
 FORMS += \
     recorderwindow.ui

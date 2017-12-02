@@ -10,6 +10,10 @@
 #include <QTemporaryDir>
 #include <QThreadPool>
 #include <utility>
+#include "helper.h"
+
+using qScreenRecoder::ScreenShot;
+using qScreenRecoder::CursorInfo;
 
 /*!
   \class PixmapSavingTask
@@ -17,13 +21,22 @@
 */
 class PixmapSavingTask : public QRunnable {
  public:
-  PixmapSavingTask(QString fileName, QPixmap &&pixmap)
-      : fileName_(fileName), pixmap_(std::move(pixmap)) {}
-  void run() override { pixmap_.save(fileName_, "PNG"); }
+  PixmapSavingTask(QString fileName, QPixmap &&pixmap,
+                   QPoint screenshotGlobalPos, CursorInfo &&cursorInfo)
+      : fileName_(fileName),
+        pixmap_(std::move(pixmap)),
+        cursorInfo_(std::move(cursorInfo)),
+        pos_(screenshotGlobalPos) {}
+  void run() override {
+    ScreenShot::drawCurosr(pos_, pixmap_, cursorInfo_);
+    pixmap_.save(fileName_, "PNG");
+  }
 
  private:
   QString fileName_;
   QPixmap pixmap_;
+  CursorInfo cursorInfo_;
+  QPoint pos_;
 };
 
 // !-- ScreenRecorder
@@ -110,7 +123,6 @@ void ScreenRecorder::run() {
   count_ = 0;
   int interval = 1000 / fps_;
   QElapsedTimer timer;
-  QScreen *screen = QApplication::primaryScreen();
   QThreadPool *threadPool = QThreadPool::globalInstance();
   QMutex mutex;
   forever {
@@ -120,11 +132,13 @@ void ScreenRecorder::run() {
       int x = area_.x();
       int y = area_.y();
       lock_.unlock();
-      QPixmap pixmap =
-          screen->grabWindow(0, x, y, area_.width(), area_.height());
-      QString fileName = dir_.filePath(QString("%1.png").arg(count_++));
 
-      threadPool->start(new PixmapSavingTask(fileName, std::move(pixmap)));
+      QPixmap pixmap = ScreenShot::capture(x, y, area_.width(), area_.height());
+      CursorInfo cursorInfo = ScreenShot::getCursorInfo();
+
+      QString fileName = dir_.filePath(QString("%1.png").arg(count_++));
+      threadPool->start(new PixmapSavingTask(
+          fileName, std::move(pixmap), QPoint(x, y), std::move(cursorInfo)));
 
       emit caputured(count_);
 
