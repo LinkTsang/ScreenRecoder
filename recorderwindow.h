@@ -27,6 +27,7 @@ class RecorderWindow : public QMainWindow {
   void mousePressEvent(QMouseEvent *) override;
   void mouseMoveEvent(QMouseEvent *) override;
   void mouseReleaseEvent(QMouseEvent *) override;
+  void closeEvent(QCloseEvent *) override;
 
  private slots:
   void on_startAndPauseButton_clicked();

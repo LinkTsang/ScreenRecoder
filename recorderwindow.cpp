@@ -101,6 +101,13 @@ void RecorderWindow::mouseReleaseEvent(QMouseEvent *event) {
   }
 }
 
+void RecorderWindow::closeEvent(QCloseEvent *e)
+{
+  screenRecorder_.stop();
+  screenRecorder_.wait();
+  QMainWindow::closeEvent(e);
+}
+
 RecorderWindow::Edge RecorderWindow::getMouseIntersectEdge(QMouseEvent *e) const {
   const int precision = 3;
   auto titleBarRect = ui->titleBarLayout->geometry();
