@@ -4,8 +4,6 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
-
 TARGET = GifOutput
 TEMPLATE = lib
 CONFIG += staticlib
@@ -22,10 +20,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        gifwriter.cpp
+        gifwriter.cpp \
+    palette.cpp
 
 HEADERS += \
-        gifwriter.h
+        gifwriter.h \
+    palette.h \
+    giftype.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

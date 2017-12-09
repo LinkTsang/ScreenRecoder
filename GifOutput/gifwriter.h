@@ -2,6 +2,7 @@
 #define GIFWRITER_H
 #include <QDataStream>
 #include <QVector>
+#include "giftype.h"
 
 namespace gif {
 #pragma pack(push, 1)
@@ -35,15 +36,6 @@ struct LogicalScreenDescriptor {
         pixelAspectRatio(0) {}
 };
 #pragma pack(pop)
-
-struct Color {
-  uint8_t red;
-  uint8_t green;
-  uint8_t blue;
-  Color(uint8_t r, uint8_t g, uint8_t b) : red(r), green(g), blue(b) {}
-  Color(uint32_t c)
-      : red((c >> 16) & 0xff), green((c >> 8) & 0xff), blue(c & 0xff) {}
-};
 
 #pragma pack(push, 1)
 struct GraphicsControl {
