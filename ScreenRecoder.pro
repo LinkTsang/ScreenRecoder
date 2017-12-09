@@ -28,7 +28,7 @@ QT += winextras
 LIBS += -lKernel32 -lUser32 -lGdi32
 
 SOURCES += \
-        main.cpp \
+    main.cpp \
     screenrecorder.cpp \
     recorderwindow.cpp \
     helper.cpp

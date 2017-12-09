@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "screenrecorder.h"
 namespace Ui {
-class MainWindow;
+class RecorderWindow;
 }
 
 /*!
@@ -49,7 +49,7 @@ class RecorderWindow : public QMainWindow {
   };
   ScreenRecorder screenRecorder_;
 
-  Ui::MainWindow *ui;
+  Ui::RecorderWindow *ui;
   QColor backgroundColor_ = QColor(0xffffff);
   QColor windowBorderColor_ = QColor(0x748193);
 

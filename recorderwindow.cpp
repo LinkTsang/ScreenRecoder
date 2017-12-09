@@ -6,10 +6,10 @@
 #include <QPainter>
 #include <QTemporaryFile>
 #include <cmath>
-#include "ui_mainwindow.h"
+#include "ui_recorderwindow.h"
 
 RecorderWindow::RecorderWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) {
+    : QMainWindow(parent), ui(new Ui::RecorderWindow) {
   ui->setupUi(this);
   Qt::WindowFlags flags = Qt::Dialog;
   flags |= Qt::CustomizeWindowHint;
