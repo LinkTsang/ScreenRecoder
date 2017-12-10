@@ -1,27 +1,23 @@
 ﻿#ifndef PALETTE_H
 #define PALETTE_H
-#include <QVector>
 #include <QImage>
+#include <QVector>
+#include <array>
 #include "giftype.h"
 
 namespace gif {
 class Palette {
  public:
   Palette(uint32_t maxColor);
-  virtual void addFrame(QImage) = 0;
-  virtual QVector<Color> getColorTable() = 0;
+  virtual void addFrame(QImage);
+  virtual void addColor(QRgb color) = 0;
+  virtual QVector<QRgb> getColorTable() = 0;
+  virtual QByteArray getIndexArray(QImage) const = 0;
   virtual QImage apply(QImage) const = 0;
+  virtual ~Palette();
 
- private:
-  uint32_t maxColor_;
-};
-
-class OctreePalette : public Palette {
- public:
-  OctreePalette(uint32_t maxColor);
-  void addFrame(QImage) override;
-  QVector<Color> getColorTable() override;
-  QImage apply(QImage) const override;
+ protected:
+  uint32_t maxColors_;
 };
 }
 

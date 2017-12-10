@@ -20,13 +20,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        gifwriter.cpp \
-    palette.cpp
+    gifwriter.cpp \
+    palette.cpp \
+    octreepalette.cpp
 
 HEADERS += \
-        gifwriter.h \
+    gifwriter.h \
     palette.h \
-    giftype.h
+    giftype.h \
+    octreepalette.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

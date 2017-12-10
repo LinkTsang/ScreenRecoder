@@ -1,7 +1,9 @@
-﻿#include <QFile>
+﻿#include <palette.h>
+#include <QFile>
 #include <QString>
 #include <QtTest>
 #include "gifwriter.h"
+#include "octreepalette.h"
 
 class GifOutputTest : public QObject {
   Q_OBJECT
@@ -11,6 +13,12 @@ class GifOutputTest : public QObject {
 
  private Q_SLOTS:
   void testCase1();
+  void testOctreePalette8();
+  void testOctreePalette16();
+  void testOctreePalette64();
+  void testOctreePalette128();
+  void testOctreePalette256();
+  void testOctreePaletteIndex();
 };
 
 GifOutputTest::GifOutputTest() {}
@@ -55,6 +63,101 @@ void GifOutputTest::testCase1() {
   for (int i = 0; i < exceptedLength; ++i) {
     QVERIFY(excepted[i] == result[i]);
   }
+}
+
+void GifOutputTest::testOctreePalette8() {
+  QVERIFY(QFile(":/images/origin.png").exists());
+  QImage origin;
+  origin.load(":/images/origin.png");
+  gif::OctreePalette palette(8);
+  palette.addFrame(origin);
+  QImage result = palette.apply(origin);
+  result.save("octree_8.png");
+
+  auto colorTable = palette.getColorTable();
+  qDebug() << "palette size: " << colorTable.size();
+  QVERIFY(colorTable.size() <= 8);
+}
+
+void GifOutputTest::testOctreePalette16() {
+  QVERIFY(QFile(":/images/origin.png").exists());
+  QImage origin;
+  origin.load(":/images/origin.png");
+  gif::OctreePalette palette(16);
+  palette.addFrame(origin);
+  QImage result = palette.apply(origin);
+  result.save("octree_16.png");
+
+  auto colorTable = palette.getColorTable();
+  qDebug() << "palette size: " << colorTable.size();
+  QVERIFY(colorTable.size() <= 16);
+}
+
+void GifOutputTest::testOctreePalette64() {
+  QVERIFY(QFile(":/images/origin.png").exists());
+  QImage origin;
+  origin.load(":/images/origin.png");
+  gif::OctreePalette palette(64);
+  palette.addFrame(origin);
+  QImage result = palette.apply(origin);
+  result.save("octree_64.png");
+
+  auto colorTable = palette.getColorTable();
+  qDebug() << "palette size: " << colorTable.size();
+  QVERIFY(colorTable.size() <= 64);
+}
+
+void GifOutputTest::testOctreePalette128() {
+  QVERIFY(QFile(":/images/origin.png").exists());
+  QImage origin;
+  origin.load(":/images/origin.png");
+  gif::OctreePalette palette(128);
+  palette.addFrame(origin);
+  QImage result = palette.apply(origin);
+  result.save("octree_128.png");
+
+  auto colorTable = palette.getColorTable();
+  qDebug() << "palette size: " << colorTable.size();
+  QVERIFY(colorTable.size() <= 128);
+}
+
+void GifOutputTest::testOctreePalette256() {
+  QVERIFY(QFile(":/images/origin.png").exists());
+  QImage origin;
+  origin.load(":/images/origin.png");
+  gif::OctreePalette palette(256);
+  palette.addFrame(origin);
+  QImage result = palette.apply(origin);
+  result.save("octree_256.png");
+
+  auto colorTable = palette.getColorTable();
+  qDebug() << "palette size: " << colorTable.size();
+  QVERIFY(colorTable.size() <= 256);
+}
+
+void GifOutputTest::testOctreePaletteIndex() {
+  QVERIFY(QFile(":/images/origin.png").exists());
+  QImage origin;
+  origin.load(":/images/origin.png");
+  gif::OctreePalette palette(8);
+  palette.addFrame(origin);
+  QVector<QRgb> colorTable = palette.getColorTable();
+  QByteArray indexArray = palette.getIndexArray(origin);
+
+  QImage result(origin.width(), origin.height(), QImage::Format_Indexed8);
+  result.setColorTable(colorTable);
+  uchar *data = result.bits();
+  int count = result.byteCount();
+  for (int i = 0; i < count; ++i) {
+    data[i] = indexArray[i];
+  }
+
+  result.save("octree_8_index.png");
+
+  qDebug() << "origin width: " << origin.width();
+  qDebug() << "origin height: " << origin.height();
+  qDebug() << "byte count: " << count;
+  QVERIFY(origin.width() * origin.height() == count);
 }
 
 QTEST_APPLESS_MAIN(GifOutputTest)
