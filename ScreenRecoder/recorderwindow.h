@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "screenrecorder.h"
+class EditorWindow;
 namespace Ui {
 class RecorderWindow;
 }
@@ -48,6 +49,7 @@ class RecorderWindow : public QMainWindow {
     BottomLeft
   };
   ScreenRecorder screenRecorder_;
+  QDir workingDir_;
 
   Ui::RecorderWindow *ui;
   QColor backgroundColor_ = QColor(0xffffff);

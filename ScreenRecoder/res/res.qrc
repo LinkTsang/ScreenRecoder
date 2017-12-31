@@ -1,6 +1,14 @@
-<RCC>
+﻿<RCC>
     <qresource prefix="/icon">
         <file>close.png</file>
         <file>minus.png</file>
+        <file>folder.png</file>
+        <file>next.png</file>
+        <file>previous.png</file>
+        <file>before_.png</file>
+        <file>next_.png</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>title.png</file>
     </qresource>
 </RCC>

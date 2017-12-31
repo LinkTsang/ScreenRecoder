@@ -2,7 +2,9 @@
 #include <QDataStream>
 #include <QIODevice>
 #include <QString>
-
+#include "lzwtest.h"
+#include "neu.h"
+#include "octreepalette.h"
 namespace gif {
 
 static const uint8_t EXTENSION_INTRODUCER = '\x21';
@@ -12,7 +14,8 @@ static const uint8_t BLOCK_TERMINATOR = '\0';
 static const uint8_t IMAGE_SEPARATOR = '\x2C';
 static const uint8_t APPLICATION_EXTENSION_LABEL = '\xFF';
 static const uint8_t GIF_TRAILER = '\x3B';
-GifWriter::GifWriter(QIODevice* io) : stream_(io) {}
+GifWriter::GifWriter(QIODevice* io, Quantizer quantizer)
+    : stream_(io), isFirstFrame(true), quantizer(quantizer) {}
 
 void GifWriter::writeHeader() {
   auto header = "GIF89a";
@@ -46,10 +49,73 @@ void GifWriter::writeImageDescriptor(const ImageDescriptor& id) {
   stream_.writeRawData(reinterpret_cast<const char*>(&id), sizeof(id));
 }
 
+void GifWriter::writeImageData() {
+  //    LZWEncoder encoder(width,height,indexPixel.data(),7);
+  //    encoder.Encode(this->stream_);
+
+  encode(8, indexPixel.data(), width * height, this->stream_);
+  // this->stream_.writeRawData(indexPixel.data(),indexPixel.count());
+}
+
 void GifWriter::writeImageData(const char* data, uint32_t len) {
   stream_.writeRawData(data, len);
 }
 
+void GifWriter::writeFrame(QImage image) {
+  this->width = image.width();
+  this->height = image.height();
+  //
+  QVector<QRgb> colorTable;
+
+  switch (quantizer) {
+    case Quantizer::OctreePalette: {
+      OctreePalette oct(256);
+      oct.addFrame(image);
+      indexPixel = oct.getIndexArray(image);
+      colorTable = oct.getColorTable();
+    } break;
+    case Quantizer::NeuQuant: {
+      NeuQuant neu(image);
+      neu.init();
+      indexPixel = neu.getIndexArray(image);
+      colorTable = neu.getColorTable();
+    } break;
+    default:
+      // unknown
+      return;
+  }
+
+  if (isFirstFrame) {
+    writeHeader();
+    LogicalScreenDescriptor lsd(width, height, 7, 7);
+    lsd.globalColorTableFlag = 0;
+    writeLogicalScreenDescriptor(lsd);
+
+    // writePalatte(colorTable);
+    writeNetscape2_0Extension(20);
+  }
+
+  GraphicsControl gc(0);
+  writeGraphicsControl(gc);
+
+  ImageDescriptor id(width, height, 1, 7);
+  writeImageDescriptor(id);
+  writePalatte(colorTable);
+
+  isFirstFrame = false;
+  writeImageData();
+}
+void GifWriter::writePalatte(QVector<QRgb> colorTable) {
+  for (QRgb color : colorTable) {
+    stream_ << (uint8_t)qRed(color);
+    stream_ << (uint8_t)qGreen(color);
+    stream_ << (uint8_t)qBlue(color);
+  }
+  int count = 256 - colorTable.size();
+  for (int i = 0; i < count * 3; ++i) {
+    stream_ << (uint8_t)0;
+  }
+}
 void GifWriter::writeNetscape2_0Extension(uint16_t loop) {
   stream_ << EXTENSION_INTRODUCER;
   stream_ << APPLICATION_EXTENSION_LABEL;

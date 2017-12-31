@@ -6,7 +6,9 @@
 #include <QPainter>
 #include <QTemporaryFile>
 #include <cmath>
+#include "editorwindow.h"
 #include "ui_recorderwindow.h"
+#include "windowmanager.h"
 
 RecorderWindow::RecorderWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::RecorderWindow) {
@@ -101,14 +103,14 @@ void RecorderWindow::mouseReleaseEvent(QMouseEvent *event) {
   }
 }
 
-void RecorderWindow::closeEvent(QCloseEvent *e)
-{
+void RecorderWindow::closeEvent(QCloseEvent *e) {
   screenRecorder_.stop();
   screenRecorder_.wait();
   QMainWindow::closeEvent(e);
 }
 
-RecorderWindow::Edge RecorderWindow::getMouseIntersectEdge(QMouseEvent *e) const {
+RecorderWindow::Edge RecorderWindow::getMouseIntersectEdge(
+    QMouseEvent *e) const {
   const int precision = 3;
   auto titleBarRect = ui->titleBarLayout->geometry();
   auto bottomBarRect = ui->bottomBarLayout->geometry();
@@ -252,7 +254,8 @@ void RecorderWindow::startRecord() {
   screenRecorder_.setArea(area);
   auto currentTime =
       QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss.zzz");
-  screenRecorder_.setDir(QDir(currentTime));
+  workingDir_ = QDir(currentTime);
+  screenRecorder_.setDir(workingDir_);
   screenRecorder_.setFPS(ui->fpsBox->text().toInt());
   screenRecorder_.start();
 }
@@ -281,11 +284,17 @@ void RecorderWindow::on_startAndPauseButton_clicked() {
 void RecorderWindow::on_stopButton_clicked() {
   switch (screenRecorder_.status()) {
     case ScreenRecorder::Status::Recording:
-    case ScreenRecorder::Status::Paused:
+    case ScreenRecorder::Status::Paused: {
       stopRecord();
       ui->startAndPauseButton->setText(tr("Start"));
       ui->stopButton->setEnabled(false);
+      this->hide();
+
+      auto &editorWindow = WindowManager::getEditorWindow();
+      editorWindow.setWorkingDir(workingDir_.path());
+      editorWindow.show();
       break;
+    }
     default:
       break;
   }

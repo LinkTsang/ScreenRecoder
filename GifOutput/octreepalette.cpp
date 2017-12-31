@@ -1,20 +1,14 @@
-﻿#include "octreepalette.h"
+#include "octreepalette.h"
 namespace gif {
 // !-- OctreeNode
 struct OctreeNode {
-  union {
-    struct {
-      std::array<OctreeNode*, 8> children;  // Pointers to child nodes
-      OctreeNode* next;                     // Pointer to next reducible node
-    };
-    struct {
-      uint32_t colorCount;  // Number of pixels represented by this leaf
-      uint32_t redSum;      // Sum of red components
-      uint32_t greenSum;    // Sum of green components
-      uint32_t blueSum;     // Sum of blue components
-      uint32_t colorIndex;  // index of current color
-    };
-  };
+  std::array<OctreeNode*, 8> children;  // Pointers to child nodes
+  OctreeNode* next;                     // Pointer to next reducible node
+  uint32_t colorCount;  // Number of pixels represented by this leaf
+  uint32_t redSum;      // Sum of red components
+  uint32_t greenSum;    // Sum of green components
+  uint32_t blueSum;     // Sum of blue components
+  uint32_t colorIndex;  // index of current color
   bool isLeaf;  // true if node has no children
   OctreeNode(int level)
       : children{nullptr},
@@ -158,7 +152,7 @@ void OctreePalette::freeNode(OctreeNode*& pNode) {
 
 // pNode != nullptr
 void OctreePalette::updateIndex(OctreeNode* pNode, uint32_t& index) {
-  Q_ASSERT(pNode != nullptr);
+  //Q_ASSERT(pNode != nullptr);
   if (pNode->isLeaf) {
     pNode->colorIndex = index;
     index++;

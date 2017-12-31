@@ -31,15 +31,39 @@ SOURCES += \
     main.cpp \
     screenrecorder.cpp \
     recorderwindow.cpp \
-    helper.cpp
+    helper.cpp \
+    drawwidget.cpp \
+    mylabel.cpp \
+    editorwindow.cpp \
+    windowmanager.cpp \
+    outputwindow.cpp
 
 HEADERS += \
     screenrecorder.h \
     recorderwindow.h \
-    helper.h
+    helper.h \
+    drawwidget.h \
+    mylabel.h \
+    editorwindow.h \
+    windowmanager.h \
+    outputwindow.h
 
 FORMS += \
-    recorderwindow.ui
+    recorderwindow.ui \
+    outputwindow.ui
 
 RESOURCES += \
     res/res.qrc
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../GifOutput/release/ -lGifOutput
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../GifOutput/debug/ -lGifOutput
+else:unix: LIBS += -L$$OUT_PWD/../GifOutput/ -lGifOutput
+
+INCLUDEPATH += $$PWD/../GifOutput
+DEPENDPATH += $$PWD/../GifOutput
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../GifOutput/release/libGifOutput.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../GifOutput/debug/libGifOutput.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../GifOutput/release/GifOutput.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../GifOutput/debug/GifOutput.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../GifOutput/libGifOutput.a

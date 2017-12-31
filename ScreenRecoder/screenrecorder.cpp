@@ -10,6 +10,7 @@
 #include <QTemporaryDir>
 #include <QThreadPool>
 #include <utility>
+#include "windowmanager.h"
 #include "helper.h"
 
 using qScreenRecoder::ScreenShot;
@@ -136,7 +137,7 @@ void ScreenRecorder::run() {
       QPixmap pixmap = ScreenShot::capture(x, y, area_.width(), area_.height());
       CursorInfo cursorInfo = ScreenShot::getCursorInfo();
 
-      QString fileName = dir_.filePath(QString("%1.png").arg(count_++));
+      QString fileName = dir_.filePath(QString("%1.png").arg(count_++, 5, 10, QChar('0')));
       threadPool->start(new PixmapSavingTask(
           fileName, std::move(pixmap), QPoint(x, y), std::move(cursorInfo)));
 

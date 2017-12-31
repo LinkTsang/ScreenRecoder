@@ -1,10 +1,8 @@
 ﻿#include <QApplication>
 #include "recorderwindow.h"
-
+#include "windowmanager.h"
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);
-  RecorderWindow w;
-  w.show();
-
+  WindowManager::instance().getRecorderWindow().show();
   return a.exec();
 }

@@ -22,13 +22,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     gifwriter.cpp \
     palette.cpp \
-    octreepalette.cpp
+    octreepalette.cpp \
+    lzwtest.cpp \
+    neu.cpp
 
 HEADERS += \
     gifwriter.h \
     palette.h \
     giftype.h \
-    octreepalette.h
+    octreepalette.h \
+    lzwtest.h \
+    neu.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

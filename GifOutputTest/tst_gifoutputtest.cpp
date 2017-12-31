@@ -38,7 +38,7 @@ void GifOutputTest::testCase1() {
 
   QBuffer buffer;
   buffer.open(QBuffer::WriteOnly);
-  gif::GifWriter writer(&buffer);
+  gif::GifWriter writer(&buffer, gif::Quantizer::OctreePalette);
   gif::LogicalScreenDescriptor desc(10, 10, 1, 1);
   QVector<gif::Color> table{0xffffff, 0xff0000, 0x0000ff, 0x000000};
   gif::ImageDescriptor id(10, 10, 0, 0);
